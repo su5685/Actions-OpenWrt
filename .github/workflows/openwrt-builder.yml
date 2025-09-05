@@ -51,7 +51,13 @@ jobs:
         echo "清理后空间使用情况："
         echo "======================="
         df -h
-    
+    # 生成默认的Ubuntu官方源（假设系统为Ubuntu 22.04 Jammy）
+sudo tee /etc/apt/sources.list <<EOF
+deb http://archive.ubuntu.com/ubuntu/  $(lsb_release -sc) main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/  $(lsb_release -sc)-updates main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/  $(lsb_release -sc)-security main restricted universe multiverse
+EOF
+
 
 
     - name: Initialization environment
