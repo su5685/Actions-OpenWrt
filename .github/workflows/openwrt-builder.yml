@@ -51,6 +51,8 @@ jobs:
         echo "清理后空间使用情况："
         echo "======================="
         df -h
+     run: |
+        sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.org/init_build_environment.sh)'
 
     - name: Initialization environment
       env:
