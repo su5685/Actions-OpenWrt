@@ -134,6 +134,12 @@ jobs:
         [ ${UPLOAD_GOFILE} = true && ${{ steps.gofile.outputs.url }} ] && echo "🔗 [GoFile](${{ steps.gofile.outputs.url }})" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
+    - name: Clean swapfile to avoid upload error
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile $GITHUB_WORKSPACE/swapfile ./swapfile
+
     - name: Upload firmware to release
       uses: softprops/action-gh-release@master
       if: steps.tag.outputs.status == 'success' && !cancelled()
@@ -142,7 +148,13 @@ jobs:
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
+        retry_count: 5
+        retry_delay: 6000
+        files: |
+          ${{ env.FIRMWARE }}/*.bin
+          ${{ env.FIRMWARE }}/*.img
+          ${{ env.FIRMWARE }}/*.tar.gz
+          ${{ env.FIRMWARE }}/*.sha256sums
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
